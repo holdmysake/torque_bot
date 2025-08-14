@@ -12,6 +12,7 @@
   "description": "",
   "dependencies": {
     "@whiskeysockets/baileys": "^6.7.18",
+    "cors": "^2.8.5",
     "express": "^5.1.0",
     "nats": "^2.29.3",
     "nodemon": "^3.1.10",
