@@ -4,10 +4,10 @@ import { startBot } from './bot.js'
 import bot_route from './bot.route.js'
 
 const app = express()
+app.use(cors())
 app.use(express.json())
 
 app.use('', bot_route)
-app.use(cors())
 
 let sock
 
