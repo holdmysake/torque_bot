@@ -1,11 +1,11 @@
 import pkg from "@whiskeysockets/baileys"
 import qrcode from "qrcode-terminal"
-
 const { default: makeWASocket, useMultiFileAuthState } = pkg
 
-let latestQR = null
+let lastQR = null
+let lastStatus = { connected: false }
 
-export async function startBot() {
+export async function startBot(io) {
     console.log('Starting bot...')
     const { state, saveCreds } = await useMultiFileAuthState('./baileys_auth')
 
@@ -16,25 +16,30 @@ export async function startBot() {
 
     sock.ev.on('creds.update', saveCreds)
 
+    io.on('connection', (socket) => {
+        console.log('Frontend connected via socket')
+        if (lastQR) socket.emit('qr', lastQR)
+        socket.emit('status', lastStatus)
+    })
+
     sock.ev.on('connection.update', (update) => {
         const { connection, lastDisconnect, qr } = update
+
         if (qr) {
-            latestQR = qr
-            // qrcode.generate(qr, { small: true })
+            lastQR = qr
+            io.emit('qr', qr)
         }
 
         if (connection === 'open') {
-            latestQR = null
-            console.log('Bot is connected')
+            lastStatus = { connected: true }
+            io.emit('status', lastStatus)
+            lastQR = null // hapus qr karena sudah connect
         } else if (connection === 'close') {
-            console.log('Connection closed:', lastDisconnect?.error)
-            startBot()
+            lastStatus = { connected: false }
+            io.emit('status', lastStatus)
+            startBot(io)
         }
     })
 
     return sock
-}
-
-export function getLatestQR() {
-    return latestQR
 }
