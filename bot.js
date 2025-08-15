@@ -32,7 +32,7 @@ export async function startBot(io) {
         }
 
         if (connection === 'open') {
-            const no_wa = sock.user?.id
+            const no_wa = sock.user?.id?.split(':')[0] || null
             lastStatus = { connected: true, no_wa }
             io.emit('status', lastStatus)
             lastQR = null
