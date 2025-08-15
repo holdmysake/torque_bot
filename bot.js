@@ -4,6 +4,7 @@ const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = pkg
 
 let lastQR = null
 let lastStatus = { connected: false }
+let sockInstance = null
 
 export async function startBot(io) {
     console.log('Starting bot...')
@@ -14,6 +15,8 @@ export async function startBot(io) {
         printQRInTerminal: false,
         browser: ["Bot Torque", "Chrome", "1.0.0"]
     })
+
+    sockInstance = sock
 
     sock.ev.on('creds.update', saveCreds)
 
@@ -54,4 +57,14 @@ export async function startBot(io) {
     })
 
     return sock
+}
+
+export async function disconnectBot() {
+    if (sockInstance) {
+        await sockInstance.logout()
+        sockInstance = null
+        console.log('WhatsApp bot disconnected')
+    } else {
+        console.log('Tidak ada instance WA yang aktif')
+    }
 }
