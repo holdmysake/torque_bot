@@ -32,7 +32,7 @@ export async function startBot(io) {
         }
 
         if (connection === 'open') {
-            const no_wa = sock.user?.id?.split(':')[0] || null
+            let no_wa = sock.user?.id?.split(':')[0] || null
             if (no_wa?.startsWith('62')) {
                 no_wa = '0' + no_wa.slice(2)
             }
