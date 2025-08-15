@@ -1,6 +1,6 @@
+import fs from 'fs'
 import pkg from "@whiskeysockets/baileys"
-import qrcode from "qrcode-terminal"
-const { default: makeWASocket, useMultiFileAuthState } = pkg
+const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = pkg
 
 let lastQR = null
 let lastStatus = { connected: false }
@@ -11,7 +11,8 @@ export async function startBot(io) {
 
     const sock = makeWASocket({
         auth: state,
-        printQRInTerminal: false
+        printQRInTerminal: false,
+        browser: ["Bot Torque", "Chrome", "1.0.0"]
     })
 
     sock.ev.on('creds.update', saveCreds)
@@ -36,6 +37,13 @@ export async function startBot(io) {
             io.emit('status', lastStatus)
             lastQR = null
         } else if (connection === 'close') {
+            const reason = lastDisconnect?.error?.output?.statusCode
+
+            if (reason === DisconnectReason.loggedOut) {
+                fs.rmSync('./baileys_auth', { recursive: true, force: true })
+                console.log('Session dihapus, siap QR baru')
+            }
+
             lastStatus = { connected: false, no_wa: null }
             io.emit('status', lastStatus)
             startBot(io)
