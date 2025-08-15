@@ -31,11 +31,12 @@ export async function startBot(io) {
         }
 
         if (connection === 'open') {
-            lastStatus = { connected: true }
+            const no_wa = sock.user?.id?.split('@')[0] || null
+            lastStatus = { connected: true, no_wa }
             io.emit('status', lastStatus)
-            lastQR = null // hapus qr karena sudah connect
+            lastQR = null
         } else if (connection === 'close') {
-            lastStatus = { connected: false }
+            lastStatus = { connected: false, no_wa: null }
             io.emit('status', lastStatus)
             startBot(io)
         }
