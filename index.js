@@ -3,7 +3,7 @@ import http from 'http'
 import cors from 'cors'
 import { startBot } from './bot.js'
 import { Server } from 'socket.io'
-import bot from 'bot.route.js'
+import bot from './bot.route.js'
 
 const app = express()
 app.use(cors())
